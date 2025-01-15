@@ -24,6 +24,9 @@ public class ProdutoService {
     }
 
     public List<ProdutoDTO> buscarProdutosPorNome(String nome){
+        if (nome == null || nome.isBlank()) {
+            throw new IllegalArgumentException("O nome do produto não pode ser vazio ou nulo.");
+        }
         return produtoRepository.findByNomeContainingIgnoreCase(nome)
                 .stream()
                 .map(ProdutoDTO::new)
@@ -31,9 +34,9 @@ public class ProdutoService {
     }
 
     public void deletarProduto(Long id) {
-        Produto produto = produtoRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Não encontrado pelo id: "+id));
-
+        if (!produtoRepository.existsById(id)){
+            throw new ResourceNotFoundException("Produto não encontrado pela ID: "+id);
+        }
         produtoRepository.deleteById(id);
 
     }
